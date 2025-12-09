@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -42,6 +43,7 @@ func main() {
 	}
 
 	fmt.Println("Part 1:", solvePart1(ranges, items)) // 735
+	fmt.Println("Part 2:", solvePart2(ranges))        // 344306344403172
 }
 
 func solvePart1(ranges [][2]int, items []int) int {
@@ -55,6 +57,34 @@ func solvePart1(ranges [][2]int, items []int) int {
 				foundAlready = true
 			}
 		}
+	}
+
+	return total
+}
+
+func solvePart2(ranges [][2]int) int {
+	sort.Slice(ranges, func(i, j int) bool {
+		return ranges[i][0] < ranges[j][0]
+	})
+
+	merged := [][2]int{ranges[0]}
+
+	for i := 1; i < len(ranges); i++ {
+		prev := &merged[len(merged)-1]
+		current := ranges[i]
+
+		if current[0] <= prev[1]+1 {
+			if current[1] > prev[1] {
+				prev[1] = current[1]
+			}
+		} else {
+			merged = append(merged, current)
+		}
+	}
+
+	total := 0
+	for _, r := range merged {
+		total += r[1] - r[0] + 1
 	}
 
 	return total
